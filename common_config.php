@@ -1,4 +1,4 @@
-<?
+<?php
 define('CONFIG_ENVIRONMENT', 'instant'); 	// "standalone" or "instant" (when using with instant-0chan)
 define('DOMAIN', 'yourdomain.tk');
 define('PDD_TOKEN', 'insert_PDD_token'); // https://pddimp.yandex.ru/api2/admin/get_token

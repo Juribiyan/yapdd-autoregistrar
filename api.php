@@ -1,4 +1,4 @@
-<?
+<?php
 define('API_HOST', 'https://pddimp.yandex.ru');
 define('DEBUG', false);
 
