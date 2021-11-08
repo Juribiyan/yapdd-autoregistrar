@@ -246,14 +246,14 @@ function api_request($path, $fields, $method="POST") {
 
 function retreat($errmsg) {
   exit(json_encode(array(
-    error => $errmsg
+    "error" => $errmsg
   )));
 }
 
 function advance($data) {
 	exit(json_encode(array(
-    error => false,
-    data => $data
+    "error" => false,
+    "data" => $data
   )));
 }
 
