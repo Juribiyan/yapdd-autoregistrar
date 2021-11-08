@@ -162,7 +162,7 @@ function check_user($login, $password) {
 
 function check_mailbox($login) {
 	$result = api_request('/api2/admin/email/counters', array(
-		login => $login
+		"login" => $login
 	), 'GET');
 	if(!$result) return -1;
 	if($result['success'] == 'ok') return 1;
@@ -173,8 +173,8 @@ function check_mailbox($login) {
 function add_mailbox($login, $password) {
 	global $tc_db, $uid, $newuser;
 	$result = api_request('/api2/admin/email/add', array(
-		login => $login,
-		password => $password
+		"login" => $login,
+		"password" => $password
 	), 'POST');
 	if(!$result)
 		retreat('curl-error');
@@ -194,7 +194,7 @@ function delete_mailbox($login, $from='all') {
   global $tc_db;
 	if($from!='db') {
 		$result = api_request('/api2/admin/email/del', array(
-			login => $login
+			"login" => $login
 		), 'POST');
 		if(!$result)
 			retreat('curl-error');
@@ -229,7 +229,7 @@ function api_request($path, $fields, $method="POST") {
 		curl_setopt($ch,CURLOPT_URL, $url.'?'.$fields_string);
 	}
 	else
-		return array(curl_error => 'wrong-method');
+		return array("curl_error" => 'wrong-method');
 
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 
