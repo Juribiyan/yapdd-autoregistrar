@@ -12,9 +12,15 @@ session_start();
 require 'common_config.php';
 define('TOP_COOKIE', 2147483647); // max cookie life (http://stackoverflow.com/a/22479460/1561204)
 if(CONFIG_ENVIRONMENT == 'instant')
-	require __DIR__.'/../config.php';
+	require INSTANT_CONFIG;
 else
 	require 'standalone_config.php';
+
+if (isset($_GET['hcaptcha_sitekey'])) {
+	echo I0_HCAPTCHA_SITEKEY;
+	exit();
+}
+
 $tc_db->SetFetchMode(ADODB_FETCH_ASSOC);
 
 $valid_ip_rx = "/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/i";
@@ -63,10 +69,9 @@ if($action=="add") {
   if(in_array($_POST['login'], $banned_names))
     retreat('banned-name');
 
-  $captcha = $_SESSION['security_code'];
-  unset($_SESSION['security_code']);
-	if(!isset($_POST['captcha']) || $captcha != mb_strtoupper($_POST['captcha']) || empty($captcha))
-		retreat('wrong-captcha');
+  $captcha_ok = CheckHcaptcha();
+  if (!$captcha_ok)
+  	retreat('wrong-captcha');
 	
 	if($newuser) {
     is_virgin_ip();
@@ -242,6 +247,24 @@ function api_request($path, $fields, $method="POST") {
 	curl_close($ch);
 
 	return (array)json_decode($result);
+}
+
+function CheckHcaptcha() {
+	if ($_POST['h-captcha-response']) {
+		$data = array(
+		  'secret' => I0_HCAPTCHA_SECRET,
+		  'response' => $_POST['h-captcha-response']
+		);
+		$verify = curl_init();
+		curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
+		curl_setopt($verify, CURLOPT_POST, true);
+		curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($verify);
+		$responseData = json_decode($response);
+		return $responseData->success;
+	}
+	return false;
 }
 
 function retreat($errmsg) {

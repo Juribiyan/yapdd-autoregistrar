@@ -5,6 +5,9 @@ define('KU_DBDATABASE', 'insert_name_here');
 define('KU_DBUSERNAME', 'root');
 define('KU_DBPASSWORD', '');
 define('KU_DBUSEPERSISTENT', false);
+// hCaptcha keys for your site. Obtain here: https://hCaptcha.com/?r=bcc1116c3b44
+define('I0_HCAPTCHA_SITEKEY', '');
+define('I0_HCAPTCHA_SECRET', '');
 
 // do not edit below this line
 require 'adodb/adodb.inc.php';

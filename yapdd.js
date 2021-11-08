@@ -8,6 +8,12 @@ if(!conf.hasOwnProperty('domain'))
 function main() {
   builder.init();
 
+  $.get('api.php?hcaptcha_sitekey').done(key => {
+    hcaptcha.render('hcaptcha', {
+      sitekey: key
+    })
+  })
+
   var uid = getCookie('yapdd_autoreg_id');
   if(uid.length === 32) 
     api.view(uid)
@@ -18,7 +24,16 @@ function main() {
 
   $('form').on('submit', function(ev) {
     ev.preventDefault()
-    var spoiled = false, data = {};
+    var spoiled = false
+    , data = {}
+    , hc_res = hcaptcha.getResponse()
+    if (!hcaptcha.getResponse()) {
+      popup('enter-captcha')
+      return
+    }
+    else {
+      data['h-captcha-response'] = hc_res
+    }
     $(this).find('input[type=text], input[type=password], input[type=hidden]').each(function() {
       var invalid = !validateInput(this)
       if(invalid) {
@@ -62,11 +77,6 @@ function main() {
 
   $('#delbox-floater').click(function(ev) {
     ev.stopPropagation()
-  })
-
-  $('.captcha').click(function() {
-    updateCaptcha()
-    $('input[name=captcha]').focus()
   })
 
   $(window).resize(fitDelbox).trigger('resize')
@@ -168,7 +178,7 @@ var api = {
     $('body').addClass('xhring')
     $.post('api.php?action='+action, data, function(res) {
       $('body').removeClass('xhring')
-      updateCaptcha()
+      hcaptcha.reset()
       if(res.error)
         popup(res.error)
       else
@@ -184,12 +194,6 @@ $.fn.slideOff = function(speed) {
   this.slideUp(speed, function() {
     this.remove()
   })
-}
-
-function updateCaptcha() {
-  var src = $('.captcha').attr('src').split('&')[0]
-  $('.captcha').attr('src', src+'&'+Math.random())
-  $('input[name=captcha]').val('')
 }
 
 function popup(msg) {
@@ -219,7 +223,7 @@ var errMap = {
     return "Имя занято."
   },
   get 'wrong-captcha'() {
-    $('input[name=captcha]').focus()
+    hcaptcha.reset()
     return 'Капча введена неверно.'
   },
   'fill-form': "Заполните форму",
@@ -250,6 +254,7 @@ var errMap = {
     $('body').addClass('boxlimit')
     return "Вы не можете создавать больше ящиков."
   },
+  'enter-captcha': "Введите капчу",
   'wrong-ip': "IP определен неверно",
   'no-action': "Неверный запрос (no action field)",
   'occupied-by-you': "Вы уже зарегистрировали ящик с таким именем",

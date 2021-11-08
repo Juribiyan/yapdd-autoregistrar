@@ -1,12 +1,16 @@
 body {
-  margin: 0px auto;
   color: #313131;
   font-size: 16px;
   min-height: 400px;
   position: relative;
   padding-bottom: 30px;
   font-family: sans-serif;
+  
+}
+
+.content {
   max-width: 510px;
+  margin: 0px auto;
 }
 
 a, .xlink {
@@ -316,6 +320,9 @@ form.invalid input[type=submit] {
   display: inline-block;
   padding: 10px;
 }
+.captchablock {
+  text-align: center;
+}
 
 @media only screen and (max-width: 510px) {
   body {
@@ -327,9 +334,6 @@ form.invalid input[type=submit] {
   }
   .cpointer {
     transform: rotate(90deg);
-  }
-  .captchablock {
-    text-align: center;
   }
   h1 {
     font-size: 24px;

@@ -5,51 +5,52 @@
   <title>Почта</title>
   <link rel="stylesheet" href="style.css">
   <script src="jquery.min.js"></script>
+  <script src="https://js.hcaptcha.com/1/api.js?render=explicit&&recaptchacompat=false"></script>
   <script src="yapdd.js"></script>
 </head>
 <body>
-  <div id="xhr-indicator"></div>
-  <div id="popup-container"></div>
-  <h1>Мои почтовые ящики</h1>
-  <div id="emptymsg" class="inline-msg">
-    <span class="xlink" data-act="login">Войдите</span>,
-    чтобы просмотреть список ящиков.
-    <form style="display: none" id="login-form" data-act="login" autocomplete="off">
-      <div class="inline-msg">Войдите в любой из ваших ящиков, чтобы посмотреть весь список.</div>
-      <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[a-zA-Z](?:[a-zA-Z0-9-.]{0,28}[a-zA-Z0-9])?$" type="text" name="login" placeholder="Логин" title="Не более 30 символов;&#10;Может состоять из латинских символов, цифр, одинарного дефиса или точки.&#10;Должен начинаться с буквы, заканчиваться буквой или цифрой." required>
-      <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" class="mid" type="password" name="password" placeholder="Пароль" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
-      <input type="submit" value="Войти">
+  <div class="content">
+    <div id="xhr-indicator"></div>
+    <div id="popup-container"></div>
+    <h1>Мои почтовые ящики</h1>
+    <div id="emptymsg" class="inline-msg">
+      <span class="xlink" data-act="login">Войдите</span>,
+      чтобы просмотреть список ящиков.
+      <form style="display: none" id="login-form" data-act="login" autocomplete="off">
+        <div class="inline-msg">Войдите в любой из ваших ящиков, чтобы посмотреть весь список.</div>
+        <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[a-zA-Z](?:[a-zA-Z0-9-.]{0,28}[a-zA-Z0-9])?$" type="text" name="login" placeholder="Логин" title="Не более 30 символов;&#10;Может состоять из латинских символов, цифр, одинарного дефиса или точки.&#10;Должен начинаться с буквы, заканчиваться буквой или цифрой." required>
+        <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" class="mid" type="password" name="password" placeholder="Пароль" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
+        <input type="submit" value="Войти">
+      </form>
+    </div>
+    <ul id="boxlist"></ul>
+    <div id="addbox">
+      <button class="addbtn">Добавить ящик</button>
+      <form id="register-form" data-act="add" autocomplete="off">
+        <h4>Создать новый ящик</h4>
+        <div>
+          <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[a-zA-Z](?:[a-zA-Z0-9-.]{0,28}[a-zA-Z0-9])?$" type="text" name="login" data-specialcase="boxNotInList" placeholder="Логин" title="Не более 30 символов;&#10;Может состоять из латинских символов, цифр, одинарного дефиса или точки.&#10;Должен начинаться с буквы, заканчиваться буквой или цифрой." required>
+          <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" class="mid" type="password" name="password" placeholder="Пароль" data-equal="password2" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
+          <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" type="password" name="password2" placeholder="Пароль" data-equal="password" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
+        </div>
+        <div class="captchablock">
+          <div id="hcaptcha" class="h-captcha"></div>
+          <input type="submit" value="Зарегистрировать">
+        </div>
+      </form>
+    </div>
+    <div id="fullmsg">Вы не можете создавать больше ящиков.</div>
+    <form id="delbox-floater" data-act="delete" autocomplete="off">
+      <input name="password" type="password" readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" placeholder="Пароль">
+      <input type="submit" value="Да, удалить">
+      <input type="hidden" name="login">
     </form>
+    <script>$(main)</script>
   </div>
-  <ul id="boxlist"></ul>
-  <div id="addbox">
-    <button class="addbtn">Добавить ящик</button>
-    <form id="register-form" data-act="add" autocomplete="off">
-      <h4>Создать новый ящик</h4>
-      <div>
-        <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[a-zA-Z](?:[a-zA-Z0-9-.]{0,28}[a-zA-Z0-9])?$" type="text" name="login" data-specialcase="boxNotInList" placeholder="Логин" title="Не более 30 символов;&#10;Может состоять из латинских символов, цифр, одинарного дефиса или точки.&#10;Должен начинаться с буквы, заканчиваться буквой или цифрой." required>
-        <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" class="mid" type="password" name="password" placeholder="Пароль" data-equal="password2" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
-        <input readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" type="password" name="password2" placeholder="Пароль" data-equal="password" data-nonequal="login" title="6–20 символов;&#10;Кириллица запрещена;&#10;Не должен совпадать с логином." required>
-      </div>
-      <div class="captchablock">
-        <img src="/captcha.php?color=20,20,20" class="captcha">
-        <div class="cpointer">&gt;</div>
-        <input type="text" name="captcha" placeholder="Капча" required>
-        <input type="submit" value="Зарегистрировать">
-      </div>
-    </form>
-  </div>
-  <div id="fullmsg">Вы не можете создавать больше ящиков.</div>
   <footer>
     <a href="https://pdd.yandex.ru/">Яндекс.Почта для домена</a>
     |
     <a href="https://github.com/Juribiyan/yapdd-autoregistrar">YaPDD-autoregistrar</a>
   </footer>
-  <form id="delbox-floater" data-act="delete" autocomplete="off">
-    <input name="password" type="password" readonly onfocus="this.removeAttribute('readonly');" pattern="^[0-9a-zA-Z!@#$%^&*()_\\+:;,.-]{6,20}$" placeholder="Пароль">
-    <input type="submit" value="Да, удалить">
-    <input type="hidden" name="login">
-  </form>
-  <script>$(main)</script>
 </body>
 </html>
